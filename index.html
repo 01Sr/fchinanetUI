@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>主页面</title>
+    <style type="text/css">
+        #login-part{
+            font-size: 12px;
+            text-align: center; /*让div内部文字居中*/
+            /*background-color: #b32932;*/
+            border-radius: 20px;
+            width: 100%;
+            /*height: 60%;*/
+            margin: auto;
+            margin-top:20%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        h3,input,button{
+            position: relative;
+            margin: 0px;
+        }
+        h3{
+            width: 269px;
+            margin:8px auto;
+            top:0px;
+            text-align: left;
+            font-size: 1.5em;
+        }
+        input{
+            display: block;/*block不可同行，inline同行但不可设置宽高度，inline-block可同行且可设置宽高度*/
+            border: none;
+            outline: none;
+            width: 100%;
+            /*height: 21px;*/
+            margin: auto;
+            left: 0;
+            right: 0;
+            padding: 12px 0;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            border: solid 1px #d5dce5;
+            border-radius: 3px;
+            text-indent: 23px;
+            font-weight: normal;
+            font-size: 1.25em;
+        }
+        #user-pass{
+            text-align: center;
+            /*background-color: #b32932;*/
+            border-radius: 20px;
+            width: 269px;
+            margin: auto;
+            position: absolute;
+            left: 0;
+            right: 0;
+        }
+
+        #login{
+            width: 100%;
+            height: 44px;
+            outline: none;
+            line-height: 44px;
+            color: #fff;
+            text-align: center;
+            margin-top: 35px;
+            font-size: 1.5em;
+            text-decoration: none;
+            clear: both;
+            border: solid 1px #c90000;
+            border-radius: 3px;
+            background-color: #a80012;
+        }
+
+        #login:hover{
+            background-color: #880012;
+        }
+
+        #terminal{
+            display: none;
+            position: absolute;
+            margin: auto;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width:100%;
+            padding-left: 8px;
+            padding-top: 12px;
+            background-color: rgba(0,0,0,0.9);
+        }
+
+    </style>
+    <script src="color.js"></script>
+    <script>
+
+        window.onload=()=>{
+            init()
+        }
+
+        function init(){
+            troot=document.querySelector('#terminal')
+            config=require('./config')
+            document.querySelector('#account').value=config.config.account
+            document.querySelector('#passwd').value=config.config.passwd
+        }
+
+        function terminal_prefix(){
+            troot.innerHTML+=`<span style="color:${white}">$ </span>`
+        }
+
+        function cc(message){
+            if(message.trim()=='')
+                return
+            terminal_prefix()
+            if(message.indexOf('[Info]')==0){
+                i(message)
+                return
+            }
+            if(message.indexOf('[Error]')==0){
+                e(message)
+                return
+            }
+            if(message.indexOf('[Debug]')==0){
+                d(message)
+                return
+            }
+            if(message.indexOf('[Warning]')==0){
+                w(message)
+                return
+            }
+
+            v(message)
+        }
+
+        function v(message){
+            troot.innerHTML+=`<span style="color:${white}">${message}</span><br>`
+        }
+
+        function i(message) {
+            troot.innerHTML+=`<span style="color:${light_green}">${message}</span><br>`
+        }
+
+        function e(message){
+
+            troot.innerHTML+=`<span style="color:${red}">${message}</span><br>`
+        }
+
+        function d(message){
+            troot.innerHTML+=`<span style="color:${blue}">${message}</span><br>`
+        }
+
+        function w(message){
+            troot.innerHTML+=`<span style="color:${orange}">${message}</span><br>`
+        }
+
+        function login(){
+            if((m=verifyForm())!==true){
+                alert(m)
+                return
+            }
+            showTerminal()
+            let account=document.querySelector('#account').value
+            let passwd=document.querySelector('#passwd').value
+            config.config.account=account
+            config.config.passwd=passwd
+            config.saveConfig()
+            let os = require("os");
+            let subfix=''
+            if(os.platform()=='win32'){
+                subfix='.exe'
+            }
+            let fchinanet=`fchinanet${subfix}`
+            let fs= require('fs')
+            if(!fs.existsSync(`./${fchinanet}`)){
+                alert('文件不存在')
+            }
+            let cmd=`./${fchinanet} -a ${account} -p ${passwd}`
+            console.log(cmd)
+            let exec = require('child_process').exec,
+                free = exec(cmd)
+            let out = free.stdout
+            // on(event: "close", listener: () => void): this;
+            // on(event: "data", listener: (chunk: Buffer | string) => void): this;
+            // on(event: "end", listener: () => void): this;
+            // on(event: "readable", listener: () => void): this;
+            // on(event: "error", listener: (err: Error) => void): this;
+            out.on('data',(data)=>{
+                lines = data.split('\n')
+                for(x in lines){
+                    console.log(lines[x])
+                    cc(lines[x])
+                }
+            })
+            out.on('error',(error)=>{
+                alert.write(error)
+            })
+        }
+
+        function showTerminal(){
+            let terminal = document.querySelector('#terminal')
+            let login_part= document.querySelector('#login-part')
+            terminal.style.display='block'
+            // login_part.style.webkitFilter = 'blur(2px);'
+            // login_part.style.filter = 'blur(2px);'
+            login_part.setAttribute("style", "-webkit-filter:blur(10px)")
+        }
+
+        function verifyForm(){
+            // 表单验证代码
+            let account=document.querySelector('#account').value
+            let passwd=document.querySelector('#passwd').value
+            if(account.trim()==''||passwd=='')
+                return '账号密码不能为空！'
+            return true
+        }
+
+    </script>
+</head>
+<body>
+<div id="login-part">
+    <h3>Fchinanet</h3>
+    <div id="user-pass">
+        <form>
+            <input id="account" type="text" name="account" placeholder="输入手机号">
+            <input id="passwd" type="password" name="passwd" placeholder="输入密码">
+
+            <div id="login" onclick="login()">登录</div>
+        </form>
+    </div>
+</div>
+<div id="terminal"></div>
+</body>
+</html>

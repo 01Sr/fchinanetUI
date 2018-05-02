@@ -1,0 +1,5 @@
+const red='#a80012'
+const orange='#b15f2c'
+const blue='#6a6da9'
+const light_green='#5c5'
+const white='#fff'
