@@ -1,12 +1,12 @@
 const fs = require('fs')
 const encoding = 'utf-8'
-const file = 'user-config.json'
+const {app} = require('electron').remote
+const path = require('path')
+const file = path.join(app.getPath('userData'),'user-config.json')
 
-alert(__dirname)
 exports.config = {
     account: '',
     passwd:'',
-
 }
 
 exports.saveConfig=function(){
