@@ -1,5 +1,6 @@
 # project
 /build/
+build.sh
 
 # macos
 .DS_Store

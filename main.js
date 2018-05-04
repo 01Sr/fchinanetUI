@@ -1,4 +1,4 @@
-const {app, BrowserWindow, net} = require('electron')
+const {app, BrowserWindow, net,globalShortcut} = require('electron')
 const path = require('path')
 const url = require('url')
 
@@ -15,7 +15,12 @@ app.commandLine.appendSwitch("--disable-http-cache");
 // app.on('ready', createWindow)
 
 app.on('ready', () => {
+
     createWindow()
+    globalShortcut.register('CommandOrControl+d', () => {
+        // 打开开发这工具
+        win.webContents.isDevToolsOpened()?win.webContents.closeDevTools():win.webContents.openDevTools()
+    })
 })
 
 // 当窗口关闭时退出
@@ -51,8 +56,7 @@ function createWindow() {
         slashes: true
     }))
 
-    // 打开开发这工具
-    win.webContents.openDevTools()
+
     //当window被关闭，这个事件会被触发
     win.on('closed', () => {
         // 取消对window对象的引用，如果你的应用支持多窗口的话，

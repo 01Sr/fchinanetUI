@@ -1,15 +1,17 @@
 {
   "name": "fchinanetUI",
   "version": "1.0.0",
-  "description": "Just for study",
+  "description": "Supply a UI for fchinanet",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ."
+    "test": "start",
+    "start": "electron .",
+    "packager": "electron-packager . fchinanetUI --electronVersion=1.8.6 --ignore=node_modules --ignore=.git --ignore=.gitignore --ignore=build --out=build --version=0.1 --platform=darwin --overwrite --asar"
   },
   "author": "01sr",
   "license": "ISC",
   "dependencies": {
-    "lowdb": "^1.0.0"
-  }
+    "iconv-lite": "*"
+  },
+  "devDependencies": {}
 }

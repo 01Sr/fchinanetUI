@@ -103,14 +103,15 @@
             width: 12px;
             height: 12px;
             position: absolute;
-            right:15px;
-            top:8px;
+            right: 15px;
+            top: 8px;
             font-size: 1.5em;
             color: white;
             text-align: center;
             border-radius: 12px;
         }
-        #close-btn:hover{
+
+        #close-btn:hover {
             cursor: pointer;
         }
 
@@ -136,6 +137,7 @@
         function cc(message) {
             if (message.trim() == '')
                 return
+            console.log(message)
             terminal_prefix()
             if (message.indexOf('[Info]') == 0) {
                 i(message)
@@ -193,51 +195,66 @@
             if (os.platform() == 'win32') {
                 subfix = '.exe'
             }
-            let {app,dialog} =require('electron').remote
+            let {app, dialog} = require('electron').remote
             let path = require('path')
             let fchinanet = `fchinanet${subfix}`
             fchinanet = path.join(app.getPath('userData'), fchinanet)
-            let cmd = `\'${fchinanet}\' -a ${account} -p ${passwd}`
+            let cmd = `\"${fchinanet}\" -a ${account} -p ${passwd}`
             console.log(cmd)
             let fs = require('fs')
             if (!fs.existsSync(`${fchinanet}`)) {
                 dialog.showMessageBox({
-                    title:'fchinanet',
+                    title: 'fchinanet',
                     message: `本程序仅提供UI，核心功能依赖于fchinanet，请在https://github.com/01sr/fchinanet/releases/下载对应的版本放置到${app.getPath('userData')}目录，并修改程序名为fchinanet`
                 })
-                `本程序仅提供UI，请在https://github.com/01sr/fchinanet/releases/下载对应的版本放置到${app.getPath('userData')}目录并修改程序名为fchinanet`
             }
             showTerminal(true)
+            cc(cmd)
             let exec = require('child_process').exec,
-                free = exec(cmd)
-            let out = free.stdout
-            // on(event: "close", listener: () => void): this;
-            // on(event: "data", listener: (chunk: Buffer | string) => void): this;
-            // on(event: "end", listener: () => void): this;
-            // on(event: "readable", listener: () => void): this;
-            // on(event: "error", listener: (err: Error) => void): this;
-            out.on('data', (data) => {
-                lines = data.split('\n')
-                for (x in lines) {
-                    console.log(lines[x])
-                    cc(lines[x])
+                free = exec(cmd, {encoding: 'binary'})
+            free.stdout.on('data', (data) => {
+                let os = require('os')
+                let iconv = require('iconv-lite')
+                if (os.platform() == 'win32') {
+                    data = iconv.decode(new Buffer(data, 'binary'), 'gbk')
+                } else {
+                    data = iconv.decode(new Buffer(data, 'binary'), 'utf8')
                 }
+                if (data.trim() !== '') {
+                    lines = data.split('\n')
+                    for (x in lines) {
+                        if (lines[x].indexOf('Press any key to exit') < 0) {
+                            cc(lines[x])
+                        }
+                    }
+                }
+
             })
-            out.on('error', (error) => {
-                alert.write(error)
+            free.stderr.on('data',(data)=>{
+                let os = require('os')
+                let iconv = require('iconv-lite')
+                if (os.platform() == 'win32') {
+                    data = iconv.decode(new Buffer(data, 'binary'), 'gbk')
+                } else {
+                    data = iconv.decode(new Buffer(data, 'binary'), 'utf8')
+                }
+                if (data.trim !== '') {
+                    data = `[Error] ${data}`
+                    cc(data)
+                }
             })
         }
 
         function showTerminal(show) {
             let terminal = document.querySelector('#terminal')
             let login_part = document.querySelector('#login-part')
-            if(show){
+            if (show) {
                 terminal.style.display = 'block'
                 // login_part.style.webkitFilter = 'blur(2px);'
                 // login_part.style.filter = 'blur(2px);'
                 // login_part.setAttribute("style", "-webkit-filter:blur(10px)")
-                login_part.setAttribute("style", "filter: hue-rotate(-0.25turn)")
-            }else{
+                // login_part.setAttribute("style", "filter: hue-rotate(-0.25turn)")
+            } else {
                 terminal.style.display = 'none'
                 // login_part.style.webkitFilter = 'blur(2px);'
                 // login_part.style.filter = 'blur(2px);'
@@ -254,8 +271,6 @@
                 return '账号密码不能为空！'
             return true
         }
-
-
 
     </script>
 </head>
