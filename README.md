@@ -11,7 +11,7 @@ fchinanetUI仅提供操作界面，并不提供核心的网络登录功能，所
 - 下载对应平台的fchinanetUI压缩包，解压到任意目录，在解压文件根目录下分别有各平台的运行文件（macos : fchinanetUI.app, windows : fchinanetUI.exe, linux : fchinanetUI），运行即可。
 - 第一次运行，尝试登录会提示下载对应平台的[fchinanet](https://github.com/01sr/fchinanet)程序，下载后放置于提示指定的目录下，并修改名称为fchinanet，下图为mac下的提示。
 
-<img src='/var/folders/wy/jg635dz102scnq9_l8zd4n_r0000gn/T/abnerworks.Typora/image-20180504183823606.png' style="zoom:50%"/>
+<img src='http://osxhu29uq.bkt.clouddn.com/img/2018-05-04-image-20180504183823606.png' style="zoom:50%"/>
 
 #### 关于
 
